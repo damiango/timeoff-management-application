@@ -17,7 +17,7 @@
 FROM alpine:latest as dependencies
 
 RUN apk add --no-cache \
-    nodejs npm 
+    nodejs nodejs-dev npm sqlite sqlite-dev python3 make g++
 
 COPY package.json  .
 RUN npm install 
