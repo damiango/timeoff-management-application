@@ -28,4 +28,4 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           push: true
-          tags: ${{ secrets.REGISTRY_LOGIN_SERVER }}/timeoff:latest
+          tags: ${{ secrets.REGISTRY_LOGIN_SERVER }}/timeoff:${{ github.sha }}
