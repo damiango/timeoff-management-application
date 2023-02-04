@@ -1,0 +1,34 @@
+name: cd
+
+on:
+  workflow_run:
+    workflows: [ci]
+    types:
+      - completed
+
+jobs:
+  CD:
+    runs-on: ubuntu-latest
+    steps:
+      - 
+        name: update k8s manifest in infra repo
+        run: |
+          export INFRA_REPO=https://${{secrets.GH_TOKEN}}@github.com/damiango/timeoff-management-infra.git
+          export MANIFEST_PATH=k8s/
+          export RELEASE_VERSION=${{ steps.vars.outputs.sha_short }}
+          
+          git clone $INFRA_REPO
+
+          cd timeoff-management-infra/$MANIFEST_PATH
+
+          sed -i '/image:/ s/timeoff:.*/timeoff:$RELEASE_VERSION/g' timeoff-app.yaml
+
+          if [ -n "$(git status --porcelain)" ]; then
+            git add .
+            git commit -m "Version $RELEASE_VERSION"
+            git push
+            echo "Updated manifest to version $RELEASE_VERSION";
+          else
+            echo "Error: The manifest is already updated to the version $RELEASE_VERSION";
+            exit 1
+          fi
