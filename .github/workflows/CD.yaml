@@ -10,6 +10,10 @@ jobs:
   CD:
     runs-on: ubuntu-latest
     steps:
+      -
+        name: Set tag
+        id: vars
+        run: echo "sha_short=$(echo ${GITHUB_SHA::7})" >> $GITHUB_OUTPUT
       - 
         name: update k8s manifest in infra repo
         run: |
@@ -24,7 +28,7 @@ jobs:
 
           cd timeoff-management-infra/$MANIFEST_PATH
 
-          sed -i '/image:/ s/timeoff:.*/timeoff:$RELEASE_VERSION/g' timeoff-app.yaml
+          sed -i "/image:/ s/timeoff:.*/timeoff:$RELEASE_VERSION/g" timeoff-app.yaml
 
           if [ -n "$(git status --porcelain)" ]; then
             git add .
